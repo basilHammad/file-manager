@@ -1,0 +1,53 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.main-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.checkbox-lg {
+  margin: 100px 0;
+}
+
+.or {
+  display: inline-block;
+  padding: 8px 16px;
+}
+
+.form-wrapper {
+  box-shadow: 0 0px 10px 0 rgba(0, 0, 0, 0.2);
+}
+
+.login-form {
+  padding-top: 100px;
+}
+
+.btn-trans {
+  background-color: transparent;
+  color: #fff;
+  font-size: 24px;
+}
+
+.btn:hover {
+  background-color: #54606c;
+}
+
+.fas {
+  margin-right: 10px;
+}
+
+.wrapper {
+  background-color: #dee2e6;
+}
+
+.fa-eye,
+.fa-trash-alt {
+  cursor: pointer;
+}
+/*# sourceMappingURL=main.css.map */
