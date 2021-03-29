@@ -71,7 +71,7 @@ if (!empty($_POST)) {
       </div>
 
       <div class="col col-md-8 bg-light py-4 px-5">
-        <form action="<?= $_SERVER["PHP_SELF"] ?>" method="POST" class="main-form needs-validation" novalidate>
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST" class="main-form needs-validation" novalidate>
           <div class="form-group">
             <label for="username">First Name</label>
             <input type="text" name="firstname" id="firstname" placeholder="Firstname" class="form-control " required />
@@ -114,14 +114,14 @@ if (!empty($_POST)) {
   </div>
 
   <script>
-    const form = document.querySelector(".main-form");
-    form.addEventListener("submit", (e) => {
-      if (form.checkValidity() === false) {
-        e.preventDefault();
-        e.stopPropagation();
-        form.classList.add("was-validated");
-      }
-    });
+    // const form = document.querySelector(".main-form");
+    // form.addEventListener("submit", (e) => {
+    //   if (form.checkValidity() === false) {
+    //     e.preventDefault();
+    //     e.stopPropagation();
+    //     form.classList.add("was-validated");
+    //   }
+    // });
   </script>
 </body>
 

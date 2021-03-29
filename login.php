@@ -1,24 +1,53 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-ini_set('error_reporting', E_ALL);
-ini_set('display_startup_errors', 1);
-error_reporting(-1);
 
-$user_data = json_decode(file_get_contents('user_data.json'), true);
-if (!empty($_POST)) {
-  foreach ($user_data as $user) {
-    if ($user['email'] == $_POST['email']) {
-      if ($user['password'] == $_POST['password']) {
-        session_start();
-        $_SESSION["user_id"] = $user['id'];
-        $_SESSION["name"] = $user['firstname'];
-        header("Location:filemanager.php");
+require 'validation.php';
+
+// if (!empty($_POST)) {
+//   foreach ($user_data as $user) {
+//     if ($user['email'] == $_POST['email']) {
+//       if ($user['password'] == $_POST['password']) {
+//         session_start();
+//         $_SESSION["user_id"] = $user['id'];
+//         $_SESSION["name"] = $user['firstname'];
+//         header("Location:filemanager.php");
+//       }
+//     }
+//   }
+// }
+$usersData = json_decode(file_get_contents('user_data.json'), true);
+$formData = $_POST;
+$isSubmitted = false;
+$errors = [];
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  // echo '<pre>';
+  // print_r($formData);
+  // echo '<pre>';
+  // die;
+  $isSubmitted = true;
+  // validate and test the form
+  $errors = validation($formData, 'login');
+  // start the session and redirect the user if aple to login
+  if (!$errors) {
+    foreach ($usersData as $user) {
+      if ($user['email'] == $formData['email']) {
+        // echo $user['email'];
+        if ($user['password'] == $formData['password']) {
+          // echo $user['password'];
+          // die;
+          session_start();
+          $_SESSION['id'] = $user['id'];
+          $_SESSION['name'] = $user['firstname'];
+          header("Location:newmanager.php");
+        } else {
+          $errors['password'] = 'password not correct';
+        }
+      } else {
+        $errors['email'] = 'email does not exist';
       }
     }
   }
 }
-
 ?>
 
 
@@ -37,39 +66,45 @@ if (!empty($_POST)) {
 
 <body class="main-container">
   <div class="container form-wrapper">
-    <div class="row flex-md-row h-100 ">
-      <div class="col col-md-4 bg-info">
-        <div class="row">
-          <div class="col col-12 p-4">
+    <div class="row">
+      <div class="col-sm-12 col-md-3 bg-info d-flex">
+        <div class="row py-4">
+          <div class="col-sm-6 col-md-12">
             <h1 class="text-white">Sign Up</h1>
             <p class="text-white">
               Sign up with your simple details,it will not be cross checked
               with the adminstration
             </p>
           </div>
-          <div class="col col-12 p-4">
+          <div class="col-sm-6 col-md-12">
             <h1 class="text-white">Sign In</h1>
             <p class="text-white">Sign in with username and password</p>
           </div>
         </div>
       </div>
 
-      <div class="col col-md-8 bg-light py-4 px-5   ">
+      <div class="col-sm-12 col-md-9 bg-light py-4 px-5 ">
         <form action="<?= $_SERVER["PHP_SELF"] ?>" method="POST" class="main-form needs-validation " novalidate>
           <div class="form-group">
             <label for="email">Email</label>
-            <input type="text" name="email" id="email" placeholder="Email" required class="form-control" />
-            <div class="invalid-feedback">last name is required</div>
+            <input type="text" name="email" id="email" placeholder="Email" class="form-control <?php echo $errors['email'] ?  'is-invalid' : ''; ?>" required />
+            <div class="invalid-feedback"><?php echo $isSubmitted ? $errors['email'] : 'email is required !' ?></div>
           </div>
           <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" name="password" id="password" placeholder="Password" class="form-control" required maxlength="20" minlength="6" />
+            <input type="password" name="password" id="password" placeholder="Password" class="form-control <?php echo $errors['password'] ?  'is-invalid' : ''; ?>" required />
             <div class="invalid-feedback">
-              password should be at least 6 characters
+              <?php echo $isSubmitted ? $errors['password'] : 'password is required !' ?>
             </div>
           </div>
 
-          <button class="btn btn-success btn-lg">Log In</button>
+          <div class="buttons">
+            <button type="submit" class="btn btn-success btn-lg">
+              Log In
+            </button>
+            <span class="or">Or</span>
+            <a href="./home.php" class="btn btn-light btn-lg">Sign Up</a>
+          </div>
         </form>
       </div>
     </div>
