@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           session_start();
           $_SESSION['id'] = $user['id'];
           $_SESSION['name'] = $user['firstname'];
-          header("Location:newmanager.php");
+          header("Location:filemanager.php");
         } else {
           $errors['password'] = 'password not correct';
         }

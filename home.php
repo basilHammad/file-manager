@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         session_start();
         $_SESSION['id'] = $userId;
         $_SESSION['name'] = $formData['firstname'];
-        header("Location:newmanager.php");
+        header("Location:filemanager.php");
     }
 };
 
