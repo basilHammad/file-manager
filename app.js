@@ -1,9 +1,8 @@
 $(document).ready(() => {
   const url = window.location.href;
 
-  $("#my_file").on("change", function () {
+  $("#file-to-upload").on("change", function () {
     $("#btnSubmit").click();
-    console.log("gg");
   });
 
   $("#create-folder").click(function (e) {
@@ -23,14 +22,10 @@ $(document).ready(() => {
           window.location = url;
         } else {
           $("#alert").slideToggle().delay(2000).slideToggle();
-          // setTimeout(() => {
-          //   $("#alert").slideToggle();
-          // }, 2000);
         }
       });
     }
   });
-  $(".alert").alert();
 
   $("#selectAll").change(function () {
     if (this.checked) {

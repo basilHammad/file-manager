@@ -5,7 +5,7 @@ $isSubmitted = false;
 $errors = [];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $userData = json_decode(file_get_contents('user_data.json'), true) ?: [];
+    $userData = json_decode(file_get_contents('user-data.json'), true) ?: [];
     $userId = count($userData) + 1;
     $formData = $_POST;
     $isSubmitted = true;
@@ -24,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $formData['id'] = $userId;
         $userData[] = $formData;
         $json = json_encode($userData);
-        $file = fopen('user_data.json', 'w');
+        $file = fopen('user-data.json', 'w');
         fwrite($file, $json);
         fclose($file);
 
@@ -51,80 +51,79 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="dist/css/main.css" />
 </head>
 
-<body class="main-container pt-md-5">
+<body class="main-container">
 
-    <body class="main-container">
-        <div class="container form-wrapper">
-            <div class="row">
-                <div class="col-sm-12 col-md-3 bg-info d-flex">
-                    <div class="row py-4">
-                        <div class="col-sm-6 col-md-12">
-                            <h1 class="text-white">Sign Up</h1>
-                            <p class="text-white">
-                                Sign up with your simple details,it will not be cross checked
-                                with the adminstration
-                            </p>
-                        </div>
-                        <div class="col-sm-6 col-md-12">
-                            <h1 class="text-white">Sign In</h1>
-                            <p class="text-white">Sign in with username and password</p>
-                        </div>
+    <div class="container form-wrapper">
+        <div class="row">
+            <div class="col-sm-12 col-md-3 bg-info d-flex">
+                <div class="row py-4">
+                    <div class="col-sm-6 col-md-12">
+                        <h1 class="text-white">Sign Up</h1>
+                        <p class="text-white">
+                            Sign up with your simple details,it will not be cross checked
+                            with the adminstration
+                        </p>
+                    </div>
+                    <div class="col-sm-6 col-md-12">
+                        <h1 class="text-white">Sign In</h1>
+                        <p class="text-white">Sign in with username and password</p>
                     </div>
                 </div>
+            </div>
 
-                <div class="col-sm-12 col-md-9 bg-light py-4 px-5">
-                    <form action="<?= $_SERVER["PHP_SELF"] ?>" method="POST" class="main-form needs-validation" novalidate>
-                        <div class="form-group">
-                            <label for="username">First Name</label>
-                            <input type="text" name="firstname" id="firstname" placeholder="Firstname" class="form-control <?php echo $errors['firstname'] ?  'is-invalid' : ''; ?> " required />
-                            <div class=" invalid-feedback"><?php echo $isSubmitted ? $errors['firstname'] : 'first name is required !' ?></div>
+            <div class="col-sm-12 col-md-9 bg-light py-4 px-5">
+                <form action="<?= $_SERVER["PHP_SELF"] ?>" method="POST" class="main-form needs-validation" novalidate>
+                    <div class="form-group">
+                        <label for="username">First Name</label>
+                        <input type="text" name="firstname" id="firstname" placeholder="Firstname" class="form-control <?php echo $errors['firstname'] ?  'is-invalid' : ''; ?> " required />
+                        <div class=" invalid-feedback"><?php echo $isSubmitted ? $errors['firstname'] : 'first name is required !' ?></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastname">Last Name</label>
+                        <input type="text" name="lastname" id="lastname" placeholder="Lastname" class="form-control <?php echo $errors['lastname'] ?  'is-invalid' : ''; ?>" required />
+                        <div class="invalid-feedback"><?php echo $isSubmitted ?  $errors['lastname'] : 'last name is required !' ?></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="text" name="email" id="email" placeholder="Email" class="form-control <?php echo $errors['email'] ?  'is-invalid' : ''; ?>" required />
+                        <div class="invalid-feedback"><?php echo $isSubmitted ? $errors['email'] : 'email is required !' ?></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" name="password" id="password" placeholder="Password" class="form-control <?php echo $errors['password'] ?  'is-invalid' : ''; ?>" required />
+                        <div class="invalid-feedback">
+                            <?php echo $isSubmitted ? $errors['password'] : 'password is required !' ?>
                         </div>
-                        <div class="form-group">
-                            <label for="lastname">Last Name</label>
-                            <input type="text" name="lastname" id="lastname" placeholder="Lastname" class="form-control <?php echo $errors['lastname'] ?  'is-invalid' : ''; ?>" required />
-                            <div class="invalid-feedback"><?php echo $isSubmitted ?  $errors['lastname'] : 'last name is required !' ?></div>
+                    </div>
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox checkbox-lg">
+                            <input type="checkbox" name='terms' value="accepted" class="custom-control-input <?php echo $errors['terms'] ?  'is-invalid' : ''; ?>" id="terms" required />
+                            <label class="custom-control-label" for="terms">I Agree with the terms and conitions</label>
                         </div>
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="text" name="email" id="email" placeholder="Email" class="form-control <?php echo $errors['email'] ?  'is-invalid' : ''; ?>" required />
-                            <div class="invalid-feedback"><?php echo $isSubmitted ? $errors['email'] : 'email is required !' ?></div>
-                        </div>
-                        <div class="form-group">
-                            <label for="password">Password</label>
-                            <input type="password" name="password" id="password" placeholder="Password" class="form-control <?php echo $errors['password'] ?  'is-invalid' : ''; ?>" required />
-                            <div class="invalid-feedback">
-                                <?php echo $isSubmitted ? $errors['password'] : 'password is required !' ?>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="custom-control custom-checkbox checkbox-lg">
-                                <input type="checkbox" name='terms' value="accepted" class="custom-control-input <?php echo $errors['terms'] ?  'is-invalid' : ''; ?>" id="terms" required />
-                                <label class="custom-control-label" for="terms">I Agree with the terms and conitions</label>
-                            </div>
-                        </div>
+                    </div>
 
-                        <div class="buttons">
-                            <button type="submit" class="btn btn-success btn-lg">
-                                Submit
-                            </button>
-                            <span class="or">Or</span>
-                            <a href="./login.php" class="btn btn-light btn-lg">Log In</a>
-                        </div>
-                    </form>
-                </div>
+                    <div class="buttons">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            Submit
+                        </button>
+                        <span class="or">Or</span>
+                        <a href="./login.php" class="btn btn-light btn-lg">Log In</a>
+                    </div>
+                </form>
             </div>
         </div>
+    </div>
 
-        <script>
-            const form = document.querySelector(".main-form");
-            form.addEventListener("submit", (e) => {
-                if (form.checkValidity() === false) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    form.classList.add("was-validated");
-                }
-            });
-        </script>
-    </body>
+    <script>
+        const form = document.querySelector(".main-form");
+        form.addEventListener("submit", (e) => {
+            if (form.checkValidity() === false) {
+                e.preventDefault();
+                e.stopPropagation();
+                form.classList.add("was-validated");
+            }
+        });
+    </script>
+</body>
 
 </html>

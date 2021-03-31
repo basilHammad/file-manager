@@ -5,9 +5,16 @@
 }
 
 .main-container {
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+@media (max-width: 500px) {
+  .main-container {
+    height: auto;
+  }
 }
 
 .checkbox-lg {
@@ -75,5 +82,15 @@ td {
 
 #alert {
   display: none;
+}
+
+.show {
+  display: block;
+}
+
+@media (min-width: 992px) {
+  .modal-lg {
+    max-width: 500px;
+  }
 }
 /*# sourceMappingURL=main.css.map */

@@ -2,19 +2,7 @@
 
 require 'validation.php';
 
-// if (!empty($_POST)) {
-//   foreach ($user_data as $user) {
-//     if ($user['email'] == $_POST['email']) {
-//       if ($user['password'] == $_POST['password']) {
-//         session_start();
-//         $_SESSION["user_id"] = $user['id'];
-//         $_SESSION["name"] = $user['firstname'];
-//         header("Location:filemanager.php");
-//       }
-//     }
-//   }
-// }
-$usersData = json_decode(file_get_contents('user_data.json'), true);
+$usersData = json_decode(file_get_contents('user-data.json'), true);
 $formData = $_POST;
 $isSubmitted = false;
 $errors = [];

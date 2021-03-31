@@ -1,8 +1,12 @@
 .main-container {
-  // height: 100vh;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+
+  @media (max-width: 500px) {
+    height: auto;
+  }
 }
 
 .checkbox-lg {

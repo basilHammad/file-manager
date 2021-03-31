@@ -8,11 +8,11 @@ if ($_SESSION['id']) {
 } else header("Location:home.php");
 
 
-$target_dir = 'users-folders/' . $userId . (!empty($_GET['fn']) ? '/' .  $_GET['fn'] : '');
+$targetDir = 'users-folders/' . $userId . (!empty($_GET['fn']) ? '/' .  $_GET['fn'] : '');
 
 if (!empty($_POST['create-folder'])) {
-  if (!file_exists($target_dir . '/' . $_POST['create-folder'])) {
-    mkdir($target_dir . '/' . $_POST['create-folder'], 0777, true);
+  if (!file_exists($targetDir . '/' . $_POST['create-folder'])) {
+    mkdir($targetDir . '/' . $_POST['create-folder'], 0777, true);
     die(json_encode(true));
   } else {
     die(json_encode(false));
@@ -20,28 +20,28 @@ if (!empty($_POST['create-folder'])) {
 }
 
 if (!empty($_POST['upload-file'])) {
-  $target_file = $target_dir . '/'  . basename($_FILES["file-to-upload"]["name"]);
+  $targetFile = $targetDir . '/'  . basename($_FILES["file-to-upload"]["name"]);
   $uploadOk = true;
   // Check if file already exists
-  if (file_exists($target_file)) {
+  if (file_exists($targetFile)) {
     $uploadOk = false;
   }
   // Check if $uploadOk store the file
   if ($uploadOk) {
-    move_uploaded_file($_FILES["file-to-upload"]["tmp_name"], $target_file);
+    move_uploaded_file($_FILES["file-to-upload"]["tmp_name"], $targetFile);
   }
 };
 
 if (!empty($_POST['itemsToDelete'])) {
   $itemsToDelete = $_POST['itemsToDelete'];
   foreach ($itemsToDelete as $item) {
-    if (is_dir($target_dir . '/' . $item)) {
-      system('rm -rf -- ' . escapeshellarg($target_dir . '/' . $item), $retval);
-    } else unlink($target_dir . '/' . $item);
+    if (is_dir($targetDir . '/' . $item)) {
+      system('rm -rf -- ' . escapeshellarg($targetDir . '/' . $item), $retval);
+    } else unlink($targetDir . '/' . $item);
   }
 }
 
-$userFiles = array_slice(scandir($target_dir), 2);
+$userFiles = array_slice(scandir($targetDir), 2);
 ?>
 
 <!DOCTYPE html>
@@ -64,7 +64,8 @@ $userFiles = array_slice(scandir($target_dir), 2);
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container p-3">
 
-      <a class="navbar-brand" href="home.php"><strong> File Managment System </strong>
+      <a class="navbar-brand" href="home.php">
+        <strong> File Managment System </strong>
       </a>
 
       <div>
@@ -91,9 +92,9 @@ $userFiles = array_slice(scandir($target_dir), 2);
         <form enctype="multipart/form-data" action="" method="POST" class="d-inline-block">
           <label class="btn btn-primary my-0 ml-2">
             Upload File
-            <input type="file" id="my_file" name="file-to-upload" hidden>
+            <input type="file" id="file-to-upload" name="file-to-upload" hidden>
           </label>
-          <input value="upload image" name='upload-file' type="submit" id="btnSubmit" hidden>
+          <input name='upload-file' type="submit" id="btnSubmit" hidden>
         </form>
       </div>
     </div>
@@ -141,12 +142,12 @@ $userFiles = array_slice(scandir($target_dir), 2);
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <?php foreach ($userFiles as $file) {
-          $fileType = basename(mime_content_type($target_dir . '/' . $file));
+          $fileType = basename(mime_content_type($targetDir . '/' . $file));
 
           if ($fileType == "jpg" || $fileType == "png" && $fileType == "jpeg" || $fileType != "gif") {
 
         ?>
-            <img src="<?= $target_dir . '/' . $file ?>" data-image-name="<?= $file ?>" alt="">
+            <img src="<?= $targetDir . '/' . $file ?>" data-image-name="<?= $file ?>" alt="">
         <?php }
         } ?>
       </div>
@@ -170,7 +171,7 @@ $userFiles = array_slice(scandir($target_dir), 2);
             $subDir = !empty($_GET['fn']) ? $_GET['fn'] . '/' .  $file : $file;
             $name_file = "?fn=" .  $subDir;
             $iconName = '';
-            $fileType = basename(mime_content_type($target_dir . '/' . $file));
+            $fileType = basename(mime_content_type($targetDir . '/' . $file));
             if ($fileType != "jpg" && $fileType != "png" && $fileType != "jpeg" && $fileType != "gif") {
               $iconName = 'fa-folder-open';
             } else {
@@ -179,12 +180,12 @@ $userFiles = array_slice(scandir($target_dir), 2);
           ?>
             <tr>
               <th scope="row" class="file-name">
-                <a <?= is_dir($target_dir . '/' . $file) ? 'href="filemanager.php' . $name_file . '"' : '' ?>>
+                <a <?= is_dir($targetDir . '/' . $file) ? 'href="filemanager.php' . $name_file . '"' : '' ?>>
                   <?= $file ?>
                 </a>
               </th>
-              <td><?= mime_content_type($target_dir . "/" . $file) == 'directory' ? 'Folder' : mime_content_type($target_dir . "/" . $file)  ?></td>
-              <td><?= date("Y/m/d h:i:sa", fileatime($target_dir . "/" . $file)) ?></td>
+              <td><?= mime_content_type($targetDir . "/" . $file) == 'directory' ? 'Folder' : mime_content_type($targetDir . "/" . $file)  ?></td>
+              <td><?= date("Y/m/d h:i:sa", fileatime($targetDir . "/" . $file)) ?></td>
               <td>
                 <i class="fas <?= $iconName ?> text-dark"></i><i class="fas fa-trash-alt text-dark"></i>
               </td>
@@ -197,9 +198,9 @@ $userFiles = array_slice(scandir($target_dir), 2);
       <i class="fas fa-arrow-circle-left fa-2x text-primary" id="back"></i>
     </div>
   </div>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+  <script src="app.js"></script>
 </body>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
-<script src="app.js"></script>
 
 </html>
