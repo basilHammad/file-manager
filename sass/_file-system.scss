@@ -17,4 +17,32 @@
 .fa-eye,
 .fa-trash-alt {
   cursor: pointer;
+  font-size: 25px;
+}
+.fa-folder-open {
+  font-size: 25px;
+}
+
+img {
+  display: none;
+}
+
+th,
+td {
+  word-break: break-all;
+}
+
+#back {
+  display: none;
+  cursor: pointer;
+}
+
+.log-out {
+  color: #fff;
+}
+
+#alert {
+  display: none;
+  // position: absolute;
+  // left: 50%;
 }
