@@ -21,7 +21,7 @@ $(document).ready(() => {
         if (JSON.parse(data)) {
           window.location = url;
         } else {
-          $("#alert").slideToggle().delay(2000).slideToggle();
+          $("#create-alert").slideToggle().delay(2000).slideToggle();
         }
       });
     }

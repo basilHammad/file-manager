@@ -66,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                     <div class="col-sm-6 col-md-12">
                         <h1 class="text-white">Sign In</h1>
-                        <p class="text-white">Sign in with username and password</p>
+                        <p class="text-white">Sign in with your email and password</p>
                     </div>
                 </div>
             </div>

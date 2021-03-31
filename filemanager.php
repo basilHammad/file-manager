@@ -1,37 +1,34 @@
 <?php
+// start the session and take the user id and name from it
 session_start();
 if ($_SESSION['id']) {
   $userId = $_SESSION['id'];
   $username = $_SESSION['name'];
+  // create the main folder and the user folder if not exist
   if (!file_exists('users-folders')) mkdir('users-folders', 0777, true);
   if (!file_exists("users-folders/$userId")) mkdir("users-folders/$userId", 0777, true);
-} else header("Location:home.php");
+} else header("Location:home.php"); // redirect the user if he dont have a vaild id session
 
 
 $targetDir = 'users-folders/' . $userId . (!empty($_GET['fn']) ? '/' .  $_GET['fn'] : '');
 
+// handle creating folders
 if (!empty($_POST['create-folder'])) {
   if (!file_exists($targetDir . '/' . $_POST['create-folder'])) {
     mkdir($targetDir . '/' . $_POST['create-folder'], 0777, true);
     die(json_encode(true));
-  } else {
-    die(json_encode(false));
-  }
+  } else die(json_encode(false));
 }
 
+// handle uploading files
 if (!empty($_POST['upload-file'])) {
   $targetFile = $targetDir . '/'  . basename($_FILES["file-to-upload"]["name"]);
-  $uploadOk = true;
-  // Check if file already exists
-  if (file_exists($targetFile)) {
-    $uploadOk = false;
-  }
-  // Check if $uploadOk store the file
-  if ($uploadOk) {
+  if (!file_exists($targetFile)) {
     move_uploaded_file($_FILES["file-to-upload"]["tmp_name"], $targetFile);
   }
 };
 
+// handle preview delete files and folders
 if (!empty($_POST['itemsToDelete'])) {
   $itemsToDelete = $_POST['itemsToDelete'];
   foreach ($itemsToDelete as $item) {
@@ -40,7 +37,7 @@ if (!empty($_POST['itemsToDelete'])) {
     } else unlink($targetDir . '/' . $item);
   }
 }
-
+// scan the directory for files and folders
 $userFiles = array_slice(scandir($targetDir), 2);
 ?>
 
@@ -101,7 +98,7 @@ $userFiles = array_slice(scandir($targetDir), 2);
   </div>
 
   <div class="modal" tabindex="-1" id="create-folder-modal">
-    <div class="container pt-4" id="alert">
+    <div class="container pt-4" id="create-alert">
       <div class="alert alert-warning" role="alert">
         File already exists !
       </div>
@@ -141,7 +138,9 @@ $userFiles = array_slice(scandir($targetDir), 2);
   <div class="modal fade bd-example-modal-lg" id="image" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
-        <?php foreach ($userFiles as $file) {
+        <?php
+        // rendering imgs to view them
+        foreach ($userFiles as $file) {
           $fileType = basename(mime_content_type($targetDir . '/' . $file));
 
           if ($fileType == "jpg" || $fileType == "png" && $fileType == "jpeg" || $fileType != "gif") {
@@ -167,7 +166,9 @@ $userFiles = array_slice(scandir($targetDir), 2);
           </tr>
         </thead>
         <tbody>
-          <?php foreach ($userFiles as $file) {
+          <?php
+          // rendering files and folders
+          foreach ($userFiles as $file) {
             $subDir = !empty($_GET['fn']) ? $_GET['fn'] . '/' .  $file : $file;
             $name_file = "?fn=" .  $subDir;
             $iconName = '';

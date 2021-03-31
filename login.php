@@ -8,21 +8,14 @@ $isSubmitted = false;
 $errors = [];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  // echo '<pre>';
-  // print_r($formData);
-  // echo '<pre>';
-  // die;
   $isSubmitted = true;
   // validate and test the form
   $errors = validation($formData, 'login');
-  // start the session and redirect the user if aple to login
+  // check if the user is valid and redirect him
   if (!$errors) {
     foreach ($usersData as $user) {
       if ($user['email'] == $formData['email']) {
-        // echo $user['email'];
         if ($user['password'] == $formData['password']) {
-          // echo $user['password'];
-          // die;
           session_start();
           $_SESSION['id'] = $user['id'];
           $_SESSION['name'] = $user['firstname'];
@@ -37,8 +30,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 }
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">

@@ -80,7 +80,8 @@ td {
   color: #fff;
 }
 
-#alert {
+#create-alert,
+#upload-alert {
   display: none;
 }
 
