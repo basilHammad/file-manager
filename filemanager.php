@@ -155,7 +155,8 @@ $userFiles = array_slice(scandir($targetDir), 2);
 
   <div class="wrapper py-4">
     <div class="container">
-      <table class="table table-striped bg-white">
+      <i class="fas fa-arrow-circle-left fa-2x text-primary" id="back"></i>
+      <table class="table table-striped bg-white mt-3">
         <thead>
           <tr>
             <th scope="col">Title/name</th>
@@ -196,7 +197,6 @@ $userFiles = array_slice(scandir($targetDir), 2);
 
         </tbody>
       </table>
-      <i class="fas fa-arrow-circle-left fa-2x text-primary" id="back"></i>
     </div>
   </div>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
