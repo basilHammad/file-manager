@@ -1,4 +1,7 @@
 <?php
+$imgsExt = ['jpeg', 'gif', 'png', 'jpg'];
+$videosExt = ['mp4', 'mov', 'wmv', 'flv', 'avi', 'webm'];
+
 // start the session and take the user id and name from it
 session_start();
 if ($_SESSION['id']) {
@@ -7,8 +10,7 @@ if ($_SESSION['id']) {
   // create the main folder and the user folder if not exist
   if (!file_exists('users-folders')) mkdir('users-folders', 0777, true);
   if (!file_exists("users-folders/$userId")) mkdir("users-folders/$userId", 0777, true);
-} else header("Location:home.php"); // redirect the user if he dont have a vaild id session
-
+} else header("Location:index.php"); // redirect the user if he dont have a vaild id session
 
 $targetDir = 'users-folders/' . $userId . (!empty($_GET['fn']) ? '/' .  $_GET['fn'] : '');
 
@@ -22,13 +24,19 @@ if (!empty($_POST['create-folder'])) {
 
 // handle uploading files
 if (!empty($_POST['upload-file'])) {
-  $targetFile = $targetDir . '/'  . basename($_FILES["file-to-upload"]["name"]);
-  if (!file_exists($targetFile)) {
-    move_uploaded_file($_FILES["file-to-upload"]["tmp_name"], $targetFile);
+  $file = pathinfo($_FILES["file-to-upload"]["name"]);
+  $fileName = $file['filename'];
+  $i = 1;
+  while (file_exists($targetDir . '/' . $fileName . "." . $file['extension'])) {
+    $fileName = $file['filename'] . " ($i)";
+    $i++;
   }
+  $targetFile = $targetDir . '/'  . $fileName . '.' . $file['extension'];
+
+  move_uploaded_file($_FILES["file-to-upload"]["tmp_name"], $targetFile);
 };
 
-// handle preview delete files and folders
+// handle delete files and folders
 if (!empty($_POST['itemsToDelete'])) {
   $itemsToDelete = $_POST['itemsToDelete'];
   foreach ($itemsToDelete as $item) {
@@ -61,7 +69,7 @@ $userFiles = array_slice(scandir($targetDir), 2);
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container p-3">
 
-      <a class="navbar-brand" href="home.php">
+      <a class="navbar-brand" href="index.php">
         <strong> File Managment System </strong>
       </a>
 
@@ -137,16 +145,20 @@ $userFiles = array_slice(scandir($targetDir), 2);
 
   <div class="modal fade bd-example-modal-lg" id="image" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
+
       <div class="modal-content">
         <?php
         // rendering imgs to view them
         foreach ($userFiles as $file) {
           $fileType = basename(mime_content_type($targetDir . '/' . $file));
-
-          if ($fileType == "jpg" || $fileType == "png" && $fileType == "jpeg" || $fileType != "gif") {
-
+          if (in_array($fileType, $imgsExt)) {
         ?>
-            <img src="<?= $targetDir . '/' . $file ?>" data-image-name="<?= $file ?>" alt="">
+            <img src="<?= $targetDir . '/' . $file ?>" data-item-name="<?= $file ?>" alt="">
+          <?php } else if (in_array($fileType, $videosExt)) { ?>
+            <video controls data-item-name="<?= $file ?>">
+              <source src="<?= $targetDir . '/' . $file ?>" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
         <?php }
         } ?>
       </div>
@@ -174,15 +186,15 @@ $userFiles = array_slice(scandir($targetDir), 2);
             $name_file = "?fn=" .  $subDir;
             $iconName = '';
             $fileType = basename(mime_content_type($targetDir . '/' . $file));
-            if ($fileType != "jpg" && $fileType != "png" && $fileType != "jpeg" && $fileType != "gif") {
-              $iconName = 'fa-folder-open';
-            } else {
+            if (in_array($fileType, $imgsExt) || in_array($fileType, $videosExt)) {
               $iconName = 'fa-eye';
+            } else {
+              $iconName = 'fa-folder-open';
             }
           ?>
             <tr>
               <th scope="row" class="file-name">
-                <a <?= is_dir($targetDir . '/' . $file) ? 'href="filemanager.php' . $name_file . '"' : '' ?>>
+                <a <?= is_dir($targetDir . '/' . $file) ? 'href="filemanager.php' . $name_file . '"' : 'href="preview.php'  . $name_file . '"' ?>>
                   <?= $file ?>
                 </a>
               </th>

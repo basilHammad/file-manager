@@ -1,6 +1,10 @@
 <?php
 require 'validation.php';
 
+session_start();
+if (isset($_SESSION['id']))
+    header('Location:filemanager.php');
+
 $isSubmitted = false;
 $errors = [];
 
@@ -29,7 +33,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         fclose($file);
 
         // start the session and redirect the user 
-        session_start();
         $_SESSION['id'] = $userId;
         $_SESSION['name'] = $formData['firstname'];
         header("Location:filemanager.php");

@@ -1,6 +1,6 @@
 <?php
 
-function validation($data, $page)
+function validation($data)
 {
     $errors = [];
     foreach ($data as $key => &$value) {

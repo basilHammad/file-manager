@@ -59,16 +59,18 @@ $(document).ready(() => {
   // preview imges handler
   $(".fa-eye").click(function () {
     const fileName = $(this).parent().siblings("th").children().text().trim();
-    $("img").each(function (_, img) {
-      if (fileName === $(img).data("image-name")) {
-        $(img).addClass("show").siblings().removeClass("show");
+    // console.log(fileName);
+    $("img,video").each(function (_, item) {
+      console.log($(item).data("item-name"));
+      if (fileName === $(item).data("item-name")) {
+        $(item).addClass("show").siblings().removeClass("show");
       }
     });
     $("#image").modal("show");
   });
 
   // showing the back btn
-  if (url !== "http://localhost/filemanager.php")
+  if (url !== "http://localhost/filemanger/filemanager.php")
     $("#back").css({ display: "block" });
 
   // handling the back btn

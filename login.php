@@ -13,19 +13,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $errors = validation($formData, 'login');
   // check if the user is valid and redirect him
   if (!$errors) {
-    foreach ($usersData as $user) {
-      if ($user['email'] == $formData['email']) {
-        if ($user['password'] == $formData['password']) {
-          session_start();
-          $_SESSION['id'] = $user['id'];
-          $_SESSION['name'] = $user['firstname'];
-          header("Location:filemanager.php");
+    if (!empty($usersData)) {
+      foreach ($usersData as $user) {
+        if ($user['email'] == $formData['email']) {
+          if ($user['password'] == $formData['password']) {
+            session_start();
+            $_SESSION['id'] = $user['id'];
+            $_SESSION['name'] = $user['firstname'];
+            header("Location:filemanager.php");
+          } else {
+            $errors['password'] = 'password not correct';
+          }
         } else {
-          $errors['password'] = 'password not correct';
+          $errors['email'] = 'email does not exist';
         }
-      } else {
-        $errors['email'] = 'email does not exist';
       }
+    } else {
+      $errors['email'] =  'email does not exist';
     }
   }
 }
