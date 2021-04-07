@@ -52,6 +52,10 @@
   background-color: #dee2e6;
 }
 
+.table-wrapper {
+  overflow-x: auto;
+}
+
 .fa-eye,
 .fa-trash-alt {
   cursor: pointer;
@@ -65,11 +69,6 @@
 img,
 video {
   display: none;
-}
-
-th,
-td {
-  word-break: break-all;
 }
 
 #back {
@@ -87,11 +86,17 @@ td {
 }
 
 #create-alert {
-  display: none;
+  position: relative;
+  top: -75px;
+  transition: 0.3s;
 }
 
 .show {
   display: block;
+}
+
+.slide {
+  transform: translateY(80px);
 }
 
 @media (min-width: 992px) {
@@ -103,5 +108,10 @@ td {
 .info-img {
   width: 100%;
   display: block;
+}
+
+.errore-msg {
+  display: block;
+  text-align: center;
 }
 /*# sourceMappingURL=main.css.map */

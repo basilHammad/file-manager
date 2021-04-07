@@ -15,6 +15,10 @@
   background-color: #dee2e6;
 }
 
+.table-wrapper {
+  overflow-x: auto;
+}
+
 .fa-eye,
 .fa-trash-alt {
   cursor: pointer;
@@ -29,10 +33,10 @@ video {
   display: none;
 }
 
-th,
-td {
-  word-break: break-all;
-}
+// th,
+// td {
+//   word-break: break-all;
+// }
 
 #back {
   display: none;
@@ -48,11 +52,17 @@ td {
 }
 
 #create-alert {
-  display: none;
+  position: relative;
+  top: -75px;
+  transition: 0.3s;
 }
 
 .show {
   display: block;
+}
+
+.slide {
+  transform: translateY(80px);
 }
 
 @media (min-width: 992px) {

@@ -1,1 +1,9 @@
-[{"firstname":"basil","lastname":"hammad","email":"al.lord1993@hotmail.com","password":"aaaaaa","terms":"accepted","id":1}]
+[
+  {
+    "firstname": "test",
+    "lastname": "test",
+    "email": "t@t.com",
+    "password": "aaaaaa",
+    "id": 1
+  }
+]

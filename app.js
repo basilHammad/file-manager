@@ -1,5 +1,6 @@
 $(document).ready(() => {
   const url = window.location.href;
+
   // post upload file
   $("#file-to-upload").on("change", function () {
     $("#btnSubmit").click();
@@ -22,7 +23,10 @@ $(document).ready(() => {
         if (JSON.parse(data)) {
           window.location = url;
         } else {
-          $("#create-alert").slideToggle().delay(2000).slideToggle();
+          $("#create-alert").addClass("slide");
+          setTimeout(() => {
+            $("#create-alert").removeClass("slide");
+          }, 2000);
         }
       });
     }
@@ -56,6 +60,17 @@ $(document).ready(() => {
     });
   });
 
+  if (document.querySelector(".main-form")) {
+    const form = document.querySelector(".main-form");
+    form.addEventListener("submit", (e) => {
+      if (form.checkValidity() === false) {
+        e.preventDefault();
+        e.stopPropagation();
+        form.classList.add("was-validated");
+      }
+    });
+  }
+
   // preview imges handler
   $(".fa-eye").click(function () {
     const fileName = $(this).parent().siblings("th").children().text().trim();
@@ -70,7 +85,7 @@ $(document).ready(() => {
   });
 
   // showing the back btn
-  if (url !== "http://localhost/filemanger/filemanager.php")
+  if (url !== "http://localhost/filemanger/index.php?page=filemanager")
     $("#back").css({ display: "block" });
 
   // handling the back btn

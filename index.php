@@ -1,24 +1,32 @@
 <?php
 require 'validation.php';
+$imgsExt = ['jpeg', 'gif', 'png', 'jpg'];
+$videosExt = ['mp4', 'mov', 'wmv', 'flv', 'avi', 'webm'];
 
 session_start();
-if (isset($_SESSION['id']))
-    header('Location:filemanager.php');
+// redirect the user if have id session
+if (isset($_SESSION['id']) && !isset($_GET['page'])) {
+    header('Location:index.php?page=filemanager');
+}
 
-$isSubmitted = false;
+$usersData = json_decode(file_get_contents('user-data.json'), true) ?: []; // all users
+$userId = count($usersData) + 1; //unique id for every user
 $errors = [];
+$isSubmitted = false;
+$formData = [
+    'firstname' => $_POST['firstname'],
+    'lastname' => $_POST['lastname'],
+    'email' => $_POST['email'],
+    'password' => $_POST['password']
+];
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $userData = json_decode(file_get_contents('user-data.json'), true) ?: [];
-    $userId = count($userData) + 1;
-    $formData = $_POST;
+if (!empty($formData && isset($_POST['signup']))) {
     $isSubmitted = true;
-
     // validate and test the form   
-    $errors =  validation($formData, 'home');
+    $errors =  validation($formData, 'signup');
 
     // check if the email exist 
-    foreach ($userData as $user) {
+    foreach ($usersData as $user) {
         if ($user['email'] == $formData['email'])
             $errors['email'] = 'email exist try to log in';
     };
@@ -26,8 +34,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!$errors) {
         // create users file  and register new users
         $formData['id'] = $userId;
-        $userData[] = $formData;
-        $json = json_encode($userData);
+        $usersData[] = $formData;
+        $json = json_encode($usersData);
         $file = fopen('user-data.json', 'w');
         fwrite($file, $json);
         fclose($file);
@@ -35,12 +43,99 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // start the session and redirect the user 
         $_SESSION['id'] = $userId;
         $_SESSION['name'] = $formData['firstname'];
-        header("Location:filemanager.php");
+        header("Location:index.php?page=filemanager");
     }
 };
 
+if (!empty($formData) && isset($_POST['login'])) {
+    $isSubmitted = true;
+    // validate and test the form
+    $errors = validation($formData, 'login');
+    // check if the user is valid and redirect him
+    if (!$errors) {
+        if (!empty($usersData)) {
+            foreach ($usersData as $user) {
+                if ($user['email'] == $formData['email']) {
+                    if ($user['password'] == $formData['password']) {
+                        $_SESSION['id'] = $user['id'];
+                        $_SESSION['name'] = $user['firstname'];
+                        header("Location:index.php?page=filemanager");
+                    } else {
+                        $errors['password'] = 'password not correct';
+                    }
+                } else {
+                    $errors['email'] = 'email does not exist';
+                }
+            }
+        } else {
+            $errors['email'] =  'email does not exist';
+        }
+    }
+}
 
+if ($_GET['page'] == 'filemanager') {
+    if (isset($_SESSION['id'])) {
+        $userId = $_SESSION['id'];
+        $username = $_SESSION['name'];
+        $targetDir = 'users-folders/' . $userId . (!empty($_GET['fn']) ? '/' .  $_GET['fn'] : '');
 
+        // create the main folder and the user folder if not exist
+        if (!file_exists('users-folders')) mkdir('users-folders', 0777, true);
+        if (!file_exists("users-folders/$userId")) mkdir("users-folders/$userId", 0777, true);
+    } else header("Location:index.php"); // redirect the user if he dont have a vaild id session
+
+    // handle creating folders
+    if (!empty($_POST['create-folder'])) {
+        if (!file_exists($targetDir . '/' . $_POST['create-folder'])) {
+            mkdir($targetDir . '/' . $_POST['create-folder'], 0777, true);
+            die(json_encode(true));
+        } else die(json_encode(false));
+    }
+
+    // handle uploading files
+    if (!empty($_POST['upload-file'])) {
+        $file = pathinfo($_FILES["file-to-upload"]["name"]);
+        $fileName = $file['filename'];
+        $i = 1;
+        while (file_exists($targetDir . '/' . $fileName . "." . $file['extension'])) {
+            $fileName = $file['filename'] . " ($i)";
+            $i++;
+        }
+        $targetFile = $targetDir . '/'  . $fileName . '.' . $file['extension'];
+
+        move_uploaded_file($_FILES["file-to-upload"]["tmp_name"], $targetFile);
+    };
+
+    // handle delete files and folders
+    if (!empty($_POST['itemsToDelete'])) {
+        $itemsToDelete = $_POST['itemsToDelete'];
+        foreach ($itemsToDelete as $item) {
+            if (is_dir($targetDir . '/' . $item)) {
+                system('rm -rf -- ' . escapeshellarg($targetDir . '/' . $item), $retval);
+            } else unlink($targetDir . '/' . $item);
+        }
+    }
+}
+
+if ($_GET['page'] == 'preview') {
+    if ($_SESSION['id']) {
+        $userId = $_SESSION['id'];
+        $username = $_SESSION['name'];
+    } else header("Location:index.php"); // redirect the user if he dont have a vaild id session
+
+    $file = 'users-folders/' . $userId . (!empty($_GET['fn']) ? '/' .  $_GET['fn'] : '');
+    $fileName = basename($file);
+    $fileType = basename(mime_content_type($file));
+    $fileDate =  date("Y/m/d h:i:sa", fileatime($file));
+    $fileSize = filesize($file);
+}
+
+if ($_GET['page'] == 'logout') {
+    session_destroy();
+    header("Location:index.php");
+}
+
+$userFiles = array_slice(scandir(preg_replace("/(\.\.\/)/", "", $targetDir)), 2);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -50,83 +145,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous" />
-    <title>File Managment System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
     <link rel="stylesheet" href="dist/css/main.css" />
+    <title>File Managment System</title>
 </head>
+<?php
 
-<body class="main-container">
+switch ($_GET['page']) {
+    case 'login':
+        include_once './html/login.php';
+        break;
+    case 'filemanager':
+        include_once './html/filemanager.php';
+        break;
+    case 'preview':
+        include_once './html/preview.php';
+        break;
+    default:
+        include_once './html/signup.php';
+};
+?>
 
-    <div class="container form-wrapper">
-        <div class="row">
-            <div class="col-sm-12 col-md-3 bg-info d-flex">
-                <div class="row py-4">
-                    <div class="col-sm-6 col-md-12">
-                        <h1 class="text-white">Sign Up</h1>
-                        <p class="text-white">
-                            Sign up with your simple details,it will not be cross checked
-                            with the adminstration
-                        </p>
-                    </div>
-                    <div class="col-sm-6 col-md-12">
-                        <h1 class="text-white">Sign In</h1>
-                        <p class="text-white">Sign in with your email and password</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-sm-12 col-md-9 bg-light py-4 px-5">
-                <form action="<?= $_SERVER["PHP_SELF"] ?>" method="POST" class="main-form needs-validation" novalidate>
-                    <div class="form-group">
-                        <label for="username">First Name</label>
-                        <input type="text" name="firstname" id="firstname" placeholder="Firstname" class="form-control <?php echo $errors['firstname'] ?  'is-invalid' : ''; ?> " required />
-                        <div class=" invalid-feedback"><?php echo $isSubmitted ? $errors['firstname'] : 'first name is required !' ?></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="lastname">Last Name</label>
-                        <input type="text" name="lastname" id="lastname" placeholder="Lastname" class="form-control <?php echo $errors['lastname'] ?  'is-invalid' : ''; ?>" required />
-                        <div class="invalid-feedback"><?php echo $isSubmitted ?  $errors['lastname'] : 'last name is required !' ?></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="text" name="email" id="email" placeholder="Email" class="form-control <?php echo $errors['email'] ?  'is-invalid' : ''; ?>" required />
-                        <div class="invalid-feedback"><?php echo $isSubmitted ? $errors['email'] : 'email is required !' ?></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" name="password" id="password" placeholder="Password" class="form-control <?php echo $errors['password'] ?  'is-invalid' : ''; ?>" required />
-                        <div class="invalid-feedback">
-                            <?php echo $isSubmitted ? $errors['password'] : 'password is required !' ?>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="custom-control custom-checkbox checkbox-lg">
-                            <input type="checkbox" name='terms' value="accepted" class="custom-control-input <?php echo $errors['terms'] ?  'is-invalid' : ''; ?>" id="terms" required />
-                            <label class="custom-control-label" for="terms">I Agree with the terms and conitions</label>
-                        </div>
-                    </div>
-
-                    <div class="buttons">
-                        <button type="submit" class="btn btn-success btn-lg">
-                            Submit
-                        </button>
-                        <span class="or">Or</span>
-                        <a href="./login.php" class="btn btn-light btn-lg">Log In</a>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const form = document.querySelector(".main-form");
-        form.addEventListener("submit", (e) => {
-            if (form.checkValidity() === false) {
-                e.preventDefault();
-                e.stopPropagation();
-                form.classList.add("was-validated");
-            }
-        });
-    </script>
-</body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+<script src="app.js"></script>
 
 </html>
