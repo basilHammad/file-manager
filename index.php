@@ -1,5 +1,12 @@
 <?php
-require 'validation.php';
+require './utilty/validation.php';
+require './utilty/signup-handler.php';
+require './utilty/login-handler.php';
+require './utilty/create-folder-handler.php';
+require './utilty/upload-handler.php';
+require './utilty/delete-handler.php';
+
+
 $imgsExt = ['jpeg', 'gif', 'png', 'jpg'];
 $videosExt = ['mp4', 'mov', 'wmv', 'flv', 'avi', 'webm'];
 
@@ -9,69 +16,25 @@ if (isset($_SESSION['id']) && !isset($_GET['page'])) {
     header('Location:index.php?page=filemanager');
 }
 
+
 $usersData = json_decode(file_get_contents('user-data.json'), true) ?: []; // all users
 $userId = count($usersData) + 1; //unique id for every user
 $errors = [];
 $isSubmitted = false;
 $formData = [
     'firstname' => $_POST['firstname'],
-    'lastname' => $_POST['lastname'],
+    'lastname'    => $_POST['lastname'],
     'email' => $_POST['email'],
     'password' => $_POST['password']
 ];
 
 if (!empty($formData && isset($_POST['signup']))) {
-    $isSubmitted = true;
-    // validate and test the form   
-    $errors =  validation($formData, 'signup');
-
-    // check if the email exist 
-    foreach ($usersData as $user) {
-        if ($user['email'] == $formData['email'])
-            $errors['email'] = 'email exist try to log in';
-    };
-
-    if (!$errors) {
-        // create users file  and register new users
-        $formData['id'] = $userId;
-        $usersData[] = $formData;
-        $json = json_encode($usersData);
-        $file = fopen('user-data.json', 'w');
-        fwrite($file, $json);
-        fclose($file);
-
-        // start the session and redirect the user 
-        $_SESSION['id'] = $userId;
-        $_SESSION['name'] = $formData['firstname'];
-        header("Location:index.php?page=filemanager");
-    }
+    signupHandler($isSubmitted, $errors, $usersData, $formData, $userId);
 };
 
-if (!empty($formData) && isset($_POST['login'])) {
-    $isSubmitted = true;
-    // validate and test the form
-    $errors = validation($formData, 'login');
-    // check if the user is valid and redirect him
-    if (!$errors) {
-        if (!empty($usersData)) {
-            foreach ($usersData as $user) {
-                if ($user['email'] == $formData['email']) {
-                    if ($user['password'] == $formData['password']) {
-                        $_SESSION['id'] = $user['id'];
-                        $_SESSION['name'] = $user['firstname'];
-                        header("Location:index.php?page=filemanager");
-                    } else {
-                        $errors['password'] = 'password not correct';
-                    }
-                } else {
-                    $errors['email'] = 'email does not exist';
-                }
-            }
-        } else {
-            $errors['email'] =  'email does not exist';
-        }
-    }
-}
+if (!empty($formData) && isset($_POST['login']))
+    loginHandler($isSubmitted, $errors, $usersData, $formData);
+
 
 if ($_GET['page'] == 'filemanager') {
     if (isset($_SESSION['id'])) {
@@ -85,36 +48,13 @@ if ($_GET['page'] == 'filemanager') {
     } else header("Location:index.php"); // redirect the user if he dont have a vaild id session
 
     // handle creating folders
-    if (!empty($_POST['create-folder'])) {
-        if (!file_exists($targetDir . '/' . $_POST['create-folder'])) {
-            mkdir($targetDir . '/' . $_POST['create-folder'], 0777, true);
-            die(json_encode(true));
-        } else die(json_encode(false));
-    }
+    if (!empty($_POST['create-folder'])) createFolderHandler($targetDir);
 
     // handle uploading files
-    if (!empty($_POST['upload-file'])) {
-        $file = pathinfo($_FILES["file-to-upload"]["name"]);
-        $fileName = $file['filename'];
-        $i = 1;
-        while (file_exists($targetDir . '/' . $fileName . "." . $file['extension'])) {
-            $fileName = $file['filename'] . " ($i)";
-            $i++;
-        }
-        $targetFile = $targetDir . '/'  . $fileName . '.' . $file['extension'];
-
-        move_uploaded_file($_FILES["file-to-upload"]["tmp_name"], $targetFile);
-    };
+    if (!empty($_POST['upload-file'])) uploadHandler($targetDir);
 
     // handle delete files and folders
-    if (!empty($_POST['itemsToDelete'])) {
-        $itemsToDelete = $_POST['itemsToDelete'];
-        foreach ($itemsToDelete as $item) {
-            if (is_dir($targetDir . '/' . $item)) {
-                system('rm -rf -- ' . escapeshellarg($targetDir . '/' . $item), $retval);
-            } else unlink($targetDir . '/' . $item);
-        }
-    }
+    if (!empty($_POST['itemsToDelete']))  deleteHandler($targetDir);
 }
 
 if ($_GET['page'] == 'preview') {
@@ -129,6 +69,7 @@ if ($_GET['page'] == 'preview') {
     $fileDate =  date("Y/m/d h:i:sa", fileatime($file));
     $fileSize = filesize($file);
 }
+
 
 if ($_GET['page'] == 'logout') {
     session_destroy();
