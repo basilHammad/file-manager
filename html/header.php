@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container p-3">
 
-        <a class="navbar-brand" href="index.php?page=filemanager">
+        <a class="navbar-brand" href="filemanager">
             <strong> File Managment System </strong>
         </a>
 

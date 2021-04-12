@@ -54,7 +54,7 @@
                             Submit
                         </button>
                         <span class="or">Or</span>
-                        <a href="index.php?page=login" class="btn btn-light btn-lg">Log In</a>
+                        <a href="login" class="btn btn-light btn-lg">Log In</a>
                     </div>
                 </form>
             </div>
