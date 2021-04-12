@@ -29,7 +29,8 @@ $formData = [
 ];
 
 if (!empty($formData && isset($_POST['signup']))) {
-    signupHandler($isSubmitted, $errors, $usersData, $formData, $userId);
+    $file = fopen('user-data.json', 'w') or die("File does not exist");
+    signupHandler($isSubmitted, $errors, $usersData, $formData, $userId, $file);
 };
 
 if (!empty($formData) && isset($_POST['login']))

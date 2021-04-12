@@ -1,6 +1,6 @@
 <?php
 
-function signupHandler(&$isSubmitted, &$errors, $usersData, $formData, $userId)
+function signupHandler(&$isSubmitted, &$errors, $usersData, $formData, $userId, $file)
 {
     $isSubmitted = true;
     // validate and test the form   
@@ -17,9 +17,9 @@ function signupHandler(&$isSubmitted, &$errors, $usersData, $formData, $userId)
         $formData['id'] = $userId;
         $usersData[] = $formData;
         $json = json_encode($usersData);
-        $file = fopen('user-data.json', 'w');
         fwrite($file, $json);
         fclose($file);
+
 
         // start the session and redirect the user 
         $_SESSION['id'] = $userId;
