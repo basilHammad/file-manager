@@ -100,8 +100,8 @@
                     <tbody>
                         <?php
                         foreach ($userFiles as $file) {
-                            $subDir = !empty($_GET['fn']) ? $_GET['fn'] . '&subdir=' .  $file : $file;
-                            $name_file = "?fn=" .  $subDir;
+                            $subDir = !empty($_GET['fn']) ? $_GET['fn'] . '/' .  $file : $file;
+                            $name_file = "&fn=" .  $subDir;
                             $iconName = '';
                             $fileType = basename(mime_content_type($targetDir . '/' . $file));
                             if (in_array($fileType, $imgsExt) || in_array($fileType, $videosExt)) {
@@ -112,7 +112,7 @@
                         ?>
                             <tr>
                                 <th scope="row" class="file-name">
-                                    <a <?= is_dir($targetDir . '/' . $file) ? 'href="' . $_GET['page'] . $name_file . '"' : "href=preview$name_file" ?>>
+                                    <a <?= is_dir($targetDir . '/' . $file) ? 'href="index.php' . '?page=' . $_GET['page'] . $name_file . '"' : 'href="index.php' . '?page=preview'  . $name_file . '"' ?>>
                                         <?= $file ?>
                                     </a>
                                 </th>

@@ -7,15 +7,14 @@ require './utilty/upload-handler.php';
 require './utilty/delete-handler.php';
 
 
-
 $imgsExt = ['jpeg', 'gif', 'png', 'jpg'];
 $videosExt = ['mp4', 'mov', 'wmv', 'flv', 'avi', 'webm'];
 
 session_start();
 // redirect the user if have id session
-if (isset($_SESSION['id']) && !isset($_GET['page']))
+if (isset($_SESSION['id']) && !isset($_GET['page'])) {
     header('Location:index.php?page=filemanager');
-
+}
 
 
 $usersData = json_decode(file_get_contents('user-data.json'), true) ?: []; // all users
@@ -24,14 +23,14 @@ $errors = [];
 $isSubmitted = false;
 $formData = [
     'firstname' => $_POST['firstname'],
-    'lastname'  => $_POST['lastname'],
-    'email'     => $_POST['email'],
-    'password'  => $_POST['password']
+    'lastname'    => $_POST['lastname'],
+    'email' => $_POST['email'],
+    'password' => $_POST['password']
 ];
 
-if (!empty($formData && isset($_POST['signup'])))
+if (!empty($formData && isset($_POST['signup']))) {
     signupHandler($isSubmitted, $errors, $usersData, $formData, $userId);
-
+};
 
 if (!empty($formData) && isset($_POST['login']))
     loginHandler($isSubmitted, $errors, $usersData, $formData);
@@ -41,7 +40,7 @@ if ($_GET['page'] == 'filemanager') {
     if (isset($_SESSION['id'])) {
         $userId = $_SESSION['id'];
         $username = $_SESSION['name'];
-        $targetDir = 'users-folders/' . $userId . (!empty($_GET['fn']) ? '/' .  $_GET['fn'] : '') . (!empty($_GET['subdir']) ? '/' .  $_GET['subdir'] : '');
+        $targetDir = 'users-folders/' . $userId . (!empty($_GET['fn']) ? '/' .  $_GET['fn'] : '');
 
         // create the main folder and the user folder if not exist
         if (!file_exists('users-folders')) mkdir('users-folders', 0777, true);
@@ -78,7 +77,6 @@ if ($_GET['page'] == 'logout') {
 }
 
 $userFiles = array_slice(scandir(preg_replace("/(\.\.\/)/", "", $targetDir)), 2);
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -93,6 +91,7 @@ $userFiles = array_slice(scandir(preg_replace("/(\.\.\/)/", "", $targetDir)), 2)
     <title>File Managment System</title>
 </head>
 <?php
+
 switch ($_GET['page']) {
     case 'login':
         include_once './html/login.php';

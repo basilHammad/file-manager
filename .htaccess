@@ -2,12 +2,3 @@ php_value upload_max_filesize 150M
 php_value post_max_size 150M
 php_value max_input_time 300
 php_value max_execution_time 300
-
-<IfModule mod_rewrite.c>
-  Options -Multiviews
-  RewriteEngine On
-  RewriteBase /file-manager/
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteRule  ^(.+)$ index.php?page=$1 [QSA,L]
-</IfModule>

@@ -12,7 +12,7 @@ function loginHandler(&$isSubmitted, &$errors, $usersData, $formData)
                     if ($user['password'] == $formData['password']) {
                         $_SESSION['id'] = $user['id'];
                         $_SESSION['name'] = $user['firstname'];
-                        header("Location:filemanager");
+                        header("Location:index.php?page=filemanager");
                     } else {
                         $errors['password'] = 'password not correct';
                     }
