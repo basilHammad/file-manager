@@ -3,7 +3,7 @@
 function uploadHandler($targetDir)
 {
     $file = pathinfo($_FILES["file-to-upload"]["name"]);
-    $fileName = $file['filename'];
+    $fileName = str_replace(' ', '', $file['filename']);
     $i = 1;
     while (file_exists($targetDir . '/' . $fileName . "." . $file['extension'])) {
         $fileName = $file['filename'] . " ($i)";
