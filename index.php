@@ -1,14 +1,7 @@
 <?php
-require './utilty/validation.php';
-require './utilty/signup-handler.php';
-require './utilty/login-handler.php';
-require './utilty/create-folder-handler.php';
-require './utilty/upload-handler.php';
-require './utilty/delete-handler.php';
 
-
-$imgsExt = ['jpeg', 'gif', 'png', 'jpg'];
-$videosExt = ['mp4', 'mov', 'wmv', 'flv', 'avi', 'webm'];
+require './utilty/user-manager.php';
+require './utilty/files-manager.php';
 
 session_start();
 // redirect the user if have id session

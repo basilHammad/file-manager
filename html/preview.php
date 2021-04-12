@@ -8,10 +8,10 @@
 
 
                 <?php
-                if (in_array($fileType, $imgsExt)) {
+                if (in_array($fileType, imgsExt)) {
                 ?>
                     <img class="info-img" src="<?= $file ?>" data-item-name="<?= $file ?>" alt="">
-                <?php } else if (in_array($fileType, $videosExt)) { ?>
+                <?php } else if (in_array($fileType, videosExt)) { ?>
                     <video class="info-img" controls data-item-name="<?= $file ?>">
                         <source src="<?= $file ?>" type="video/mp4">
                         Your browser does not support the video tag.

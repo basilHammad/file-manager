@@ -69,10 +69,10 @@
                 // rendering imgs to view them
                 foreach ($userFiles as $file) {
                     $fileType = basename(mime_content_type($targetDir . '/' . $file));
-                    if (in_array($fileType, $imgsExt)) {
+                    if (in_array($fileType, imgsExt)) {
                 ?>
                         <img src="<?= $targetDir . '/' . $file ?>" data-item-name="<?= $file ?>" alt="">
-                    <?php } else if (in_array($fileType, $videosExt)) { ?>
+                    <?php } else if (in_array($fileType, videosExt)) { ?>
                         <video controls data-item-name="<?= $file ?>">
                             <source src="<?= $targetDir . '/' . $file ?>" type="video/mp4">
                             Your browser does not support the video tag.
@@ -104,7 +104,7 @@
                             $name_file = "&fn=" .  $subDir;
                             $iconName = '';
                             $fileType = basename(mime_content_type($targetDir . '/' . $file));
-                            if (in_array($fileType, $imgsExt) || in_array($fileType, $videosExt)) {
+                            if (in_array($fileType, imgsExt) || in_array($fileType, videosExt)) {
                                 $iconName = 'fa-eye';
                             } else {
                                 $iconName = 'fa-folder-open';
